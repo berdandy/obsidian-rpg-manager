@@ -298,8 +298,7 @@ export default function NonPlayerCharacterWizardComponent({
   };
 
   if (
-    api.settings.chatGptKey !== undefined &&
-    api.settings.chatGptKey !== "" &&
+    api.settings.hasLLM &&
     !chatGpt.current
   ) {
     chatGpt.current = new ChatGptNonPlayerCharacterModel(
@@ -358,8 +357,7 @@ export default function NonPlayerCharacterWizardComponent({
 
   const updateStep = (newStep: number) => {
     if (
-      api.settings.chatGptKey !== undefined &&
-      api.settings.chatGptKey !== ""
+      api.settings.hasLLM
     ) {
       setCurrentChatGPT();
     }
@@ -444,8 +442,7 @@ export default function NonPlayerCharacterWizardComponent({
         <button className="rpgm-danger pl-3 pr-3 mr-6" onClick={() => close()}>
           {t("buttons.cancel")}
         </button>
-        {api.settings.chatGptKey !== undefined &&
-          api.settings.chatGptKey !== "" &&
+        {api.settings.hasLLM &&
           chatGpt.current &&
           step > 2 && (
             <button

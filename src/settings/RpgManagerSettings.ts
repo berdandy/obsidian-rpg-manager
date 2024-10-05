@@ -11,24 +11,37 @@ import { RpgManagerInterface } from "src/RpgManagerInterface";
 
 export interface RpgManagerSettingsInterface {
   chatGptKey: string | undefined;
+  ollamaUrl: string | undefined;
+  ollamaModel: string;
   templatesFolder: string | undefined;
   assetsFolder: string | undefined;
   automaticMove: boolean;
   version: string;
   customAttributes: AttributeInterface[];
   forceFullWidth: boolean;
+
+  readonly hasLLM: boolean;
 }
 
 export type PartialSettings = Partial<RpgManagerSettingsInterface>;
 
 export const rpgManagerDefaultSettings: RpgManagerSettingsInterface = {
   chatGptKey: undefined,
+  ollamaUrl: undefined,
+  ollamaModel: "llama3.1",
   templatesFolder: undefined,
   assetsFolder: undefined,
   automaticMove: false,
   version: "0.0.0",
   customAttributes: [],
   forceFullWidth: true,
+
+  get hasLLM(): boolean {
+    return (
+      (this.chatGptKey !== undefined && this.chatGptKey !== "") ||
+      (this.ollamaUrl !== undefined && this.ollamaUrl !== "" && this.ollamaModel !== undefined && this.ollamaModel !== "")
+    );
+  }
 };
 
 export class RpgManagerSettings extends PluginSettingTab {
@@ -134,7 +147,7 @@ export class RpgManagerSettings extends PluginSettingTab {
         });
       });
 
-    containerEl.createEl("h3", { text: "ChatGPT", cls: "mt-3" });
+    containerEl.createEl("h3", { text: "AI add-ons", cls: "mt-3" });
     const ChatGPT = containerEl.createEl("p");
     ChatGPT.appendText("Set up all the add-ons for the plugin. ");
     const ChatGPTWarning = containerEl.createEl("p");
@@ -154,6 +167,37 @@ export class RpgManagerSettings extends PluginSettingTab {
           .setValue(this._plugin.settings.chatGptKey)
           .onChange(async (value: string) => {
             await this.saveSettings({ chatGptKey: value });
+          }),
+      );
+
+    const OllamaWarning = containerEl.createEl("p");
+    OllamaWarning.appendChild(
+      createEl("span", {
+        text: "Please note: Ollama is a locally-run AI (LLM). You must install and run it yourself. See ollama.com for more details.",
+        cls: "text-[--text-warning]",
+      }),
+    );
+
+    new Setting(containerEl)
+      .setName("Ollama Url")
+      .setDesc("Enter your ollama url here (eg. http://localhost:11434).")
+      .addText((text) =>
+        text
+          .setPlaceholder("")
+          .setValue(this._plugin.settings.ollamaUrl)
+          .onChange(async (value: string) => {
+            await this.saveSettings({ ollamaUrl: value });
+          }),
+      );
+    new Setting(containerEl)
+      .setName("Ollama Model")
+      .setDesc("Enter ollama model desired here")
+      .addText((text) =>
+        text
+          .setPlaceholder("")
+          .setValue(this._plugin.settings.ollamaModel)
+          .onChange(async (value: string) => {
+            await this.saveSettings({ ollamaModel: value });
           }),
       );
   }

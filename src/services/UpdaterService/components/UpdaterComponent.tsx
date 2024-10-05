@@ -32,7 +32,10 @@ function Upgrading(): React.ReactElement {
     const updater = new UpdaterService(app, updateView);
     updater.updateVault().then(() => {
       const settings: RpgManagerSettingsInterface = {
-        chatGptKey: (api.settings as any).templateFolder ?? "",
+        chatGptKey: (api.settings as any).chatGptKey ?? "",
+        ollamaUrl: (api.settings as any).ollamaUrl ?? "",
+        ollamaModel: (api.settings as any).Model ?? "",
+        hasLLM: (api.settings as any).hasLLM,
         templatesFolder: (api.settings as any).templateFolder ?? "",
         assetsFolder: (api.settings as any).assetsFolder ?? "_Assets",
         automaticMove: (api.settings as any).automaticMove,
